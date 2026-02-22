@@ -1,0 +1,339 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: transparent;
+  overflow: hidden;
+  font-family: 'Segoe UI', 'Yu Gothic UI', sans-serif;
+  user-select: none;
+}
+
+.bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 6px;
+  background: linear-gradient(145deg,
+      rgba(20, 20, 35, 0.88),
+      rgba(30, 30, 50, 0.92));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  height: auto;
+  min-height: 80px;
+  width: 72px;
+}
+
+/* ドラッグハンドル */
+.drag-handle {
+  width: 100%;
+  padding: 6px 0;
+  cursor: grab;
+  display: flex;
+  justify-content: center;
+  -webkit-app-region: drag;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.drag-dots {
+  display: flex;
+  gap: 3px;
+}
+
+.drag-dots span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: background 0.3s;
+}
+
+.drag-handle:hover .drag-dots span {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* サービスリスト */
+.services {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
+  padding: 2px 0;
+  scrollbar-width: none;
+}
+
+.services::-webkit-scrollbar {
+  display: none;
+}
+
+/* サービスボタン */
+.service-btn {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+/* favicon画像 */
+.service-btn .favicon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.service-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  padding: 1px;
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.12),
+      rgba(255, 255, 255, 0.02));
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.service-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.service-btn:hover {
+  transform: scale(1.12);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.service-btn:hover::after {
+  opacity: 1;
+}
+
+.service-btn:active {
+  transform: scale(0.95);
+  transition-duration: 0.08s;
+}
+
+/* ボタンのカラーグロー */
+.service-btn .glow {
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 3px;
+  border-radius: 2px;
+  opacity: 0.6;
+  transition: all 0.3s;
+}
+
+.service-btn:hover .glow {
+  width: 30px;
+  opacity: 1;
+  box-shadow: 0 0 12px 2px var(--glow-color);
+}
+
+/* ツールチップ */
+.service-btn .tooltip {
+  position: absolute;
+  right: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%) scale(0.8);
+  background: rgba(20, 20, 35, 0.95);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  -webkit-app-region: no-drag;
+}
+
+.service-btn:hover .tooltip {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+
+/* ウィンドウモードバッジ */
+.service-btn .mode-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 7px;
+  background: rgba(0, 0, 0, 0.5);
+  color: rgba(255, 255, 255, 0.6);
+  pointer-events: none;
+}
+
+/* 下部アクション */
+.bar-actions {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.action-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  transition: all 0.25s;
+  -webkit-app-region: no-drag;
+}
+
+.action-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.1) rotate(30deg);
+}
+
+.action-btn:active {
+  transform: scale(0.9);
+}
+
+/* リップルエフェクト */
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  animation: ripple 0.5s ease-out;
+  pointer-events: none;
+}
+
+/* パルスアニメーション（ロード中） */
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+.service-btn.loading {
+  animation: pulse 1s ease-in-out infinite;
+}
+
+/* 格納ボタン */
+.collapse-btn {
+  font-size: 10px !important;
+  color: rgba(255, 255, 255, 0.35);
+  width: 28px !important;
+  height: 28px !important;
+}
+
+.collapse-btn:hover {
+  transform: scale(1.1) !important;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* バーアクション - 横並び */
+.bar-actions {
+  gap: 2px;
+}
+
+/* 格納時のタブ */
+.collapsed-tab {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: ns-resize;
+  background: linear-gradient(145deg,
+      rgba(30, 30, 55, 0.7),
+      rgba(50, 50, 80, 0.8));
+  border-radius: 3px;
+  transition: background 0.2s;
+}
+
+.collapsed-tab:hover {
+  background: linear-gradient(145deg,
+      rgba(50, 50, 80, 0.85),
+      rgba(70, 70, 110, 0.9));
+}
+
+.collapsed-tab .tab-line {
+  width: 3px;
+  height: 24px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #6366f1, #8b5cf6);
+  opacity: 0.7;
+  transition: all 0.2s;
+}
+
+.collapsed-tab:hover .tab-line {
+  height: 32px;
+  opacity: 1;
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.5);
+}

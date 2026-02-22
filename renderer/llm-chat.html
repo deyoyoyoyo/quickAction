@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local LLM Chat</title>
+    <link rel="stylesheet" href="llm-chat.css">
+</head>
+
+<body>
+    <div class="chat-app">
+        <!-- ヘッダー -->
+        <header class="chat-header">
+            <div class="header-left">
+                <div class="header-icon">🍋</div>
+                <div class="header-info">
+                    <h1>Local LLM</h1>
+                    <div class="status-indicator" id="statusIndicator">
+                        <span class="status-dot"></span>
+                        <span class="status-text">接続確認中...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="header-btn" id="clearBtn" title="会話をクリア">🗑️</button>
+                <button class="header-btn" id="settingsToggle" title="設定">⚙️</button>
+            </div>
+        </header>
+
+        <!-- 設定パネル -->
+        <div class="settings-panel" id="settingsPanel">
+            <div class="setting-row">
+                <label for="endpointInput">APIエンドポイント</label>
+                <input type="text" id="endpointInput" value="http://localhost:8000/api/v1"
+                    placeholder="http://localhost:8000/api/v1">
+            </div>
+            <div class="setting-row">
+                <label for="modelSelect">モデル</label>
+                <div class="model-select-wrapper">
+                    <select id="modelSelect">
+                        <option value="">読み込み中...</option>
+                    </select>
+                    <button class="model-refresh-btn" id="modelRefreshBtn" title="モデル一覧を更新">🔄</button>
+                </div>
+            </div>
+            <div class="setting-row">
+                <label for="systemPromptInput">システムプロンプト</label>
+                <textarea id="systemPromptInput" rows="3" placeholder="例: あなたは親切なAIアシスタントです。日本語で回答してください。"></textarea>
+            </div>
+            <div class="setting-actions">
+                <button class="setting-save-btn" id="saveSettingsBtn">保存</button>
+            </div>
+        </div>
+
+        <!-- メッセージエリア -->
+        <div class="messages-container" id="messagesContainer">
+            <div class="welcome-message" id="welcomeMessage">
+                <div class="welcome-icon">🍋</div>
+                <h2>Local LLM</h2>
+                <p>Lemonadeで動作するローカルLLMとチャットできます</p>
+                <div class="welcome-hints">
+                    <button class="hint-chip" data-prompt="自己紹介してください">👋 自己紹介してください</button>
+                    <button class="hint-chip" data-prompt="日本語で短い物語を書いてください">📖 物語を書いて</button>
+                    <button class="hint-chip" data-prompt="JavaScriptのクロージャーについて説明してください">💻 JSのクロージャー</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 入力エリア -->
+        <div class="input-area">
+            <div class="input-wrapper">
+                <textarea id="messageInput" placeholder="メッセージを入力..." rows="1"></textarea>
+                <button class="send-btn" id="sendBtn" disabled title="送信">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 2L11 13"></path>
+                        <path d="M22 2L15 22L11 13L2 9L22 2Z"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="input-footer">
+                <span class="char-count" id="charCount"></span>
+            </div>
+        </div>
+    </div>
+
+    <script src="llm-chat.js"></script>
+</body>
+
+</html>

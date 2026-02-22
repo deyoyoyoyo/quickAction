@@ -1,0 +1,15 @@
+{
+  "name": "quick-action",
+  "version": "1.0.0",
+  "description": "デスクトップ最上面常駐クイックアクションランチャー",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^33.0.0"
+  },
+  "dependencies": {
+    "electron-store": "^8.2.0"
+  }
+}

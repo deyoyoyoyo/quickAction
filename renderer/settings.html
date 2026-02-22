@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Action 設定</title>
+    <link rel="stylesheet" href="settings.css">
+</head>
+
+<body>
+    <div class="settings-app">
+        <header class="header">
+            <h1>⚡ Quick Action 設定</h1>
+            <p class="subtitle">サービスの追加・編集・削除・表示切替</p>
+        </header>
+
+        <div class="content">
+            <!-- サービス一覧 -->
+            <div class="service-list" id="serviceList">
+                <!-- 動的生成 -->
+            </div>
+
+            <!-- 追加ボタン -->
+            <button class="add-btn" id="addBtn">
+                <span class="add-icon">+</span>
+                新しいサービスを追加
+            </button>
+        </div>
+
+        <!-- 編集モーダル -->
+        <div class="modal-overlay" id="modalOverlay">
+            <div class="modal" id="editModal">
+                <div class="modal-header">
+                    <h2 id="modalTitle">サービスを追加</h2>
+                    <button class="modal-close" id="modalClose">✕</button>
+                </div>
+                <form id="serviceForm" class="modal-body">
+                    <input type="hidden" id="serviceId">
+
+                    <div class="form-group">
+                        <label for="serviceName">サービス名</label>
+                        <input type="text" id="serviceName" placeholder="例: ChatGPT" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="serviceUrl">URL</label>
+                        <input type="url" id="serviceUrl" placeholder="https://chat.openai.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="serviceColor">アクセントカラー</label>
+                        <input type="color" id="serviceColor" value="#6366f1">
+                    </div>
+
+                    <div class="form-group">
+                        <label>ウィンドウモード</label>
+                        <div class="mode-selector">
+                            <label class="mode-option">
+                                <input type="radio" name="windowMode" value="quick" checked>
+                                <div class="mode-card">
+                                    <div class="mode-icon">⚡</div>
+                                    <div class="mode-label">クイックウィンドウ</div>
+                                    <div class="mode-desc">小さなポップアップで素早く表示</div>
+                                </div>
+                            </label>
+                            <label class="mode-option">
+                                <input type="radio" name="windowMode" value="full">
+                                <div class="mode-card">
+                                    <div class="mode-icon">🖥️</div>
+                                    <div class="mode-label">フルウィンドウ</div>
+                                    <div class="mode-desc">フルサイズのウィンドウで表示</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group quick-size-group" id="quickSizeGroup">
+                        <label>クイックウィンドウサイズ</label>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="quickWidth" class="sub-label">幅 (px)</label>
+                                <input type="number" id="quickWidth" value="500" min="300" max="1200">
+                            </div>
+                            <div class="form-group">
+                                <label for="quickHeight" class="sub-label">高さ (px)</label>
+                                <input type="number" id="quickHeight" value="700" min="300" max="1000">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="cancelBtn">キャンセル</button>
+                        <button type="submit" class="btn btn-primary">保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="settings.js"></script>
+</body>
+
+</html>
