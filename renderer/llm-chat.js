@@ -232,7 +232,7 @@ function appendToAssistantMessage(chunk) {
         const messageBubbles = messagesContainer.querySelectorAll('.message.assistant');
         const lastBubble = messageBubbles[messageBubbles.length - 1];
         if (lastBubble) {
-            lastBubble.querySelector('.message-bubble').textContent = lastMsg.content;
+            lastBubble.querySelector('.message-bubble').innerHTML = formatMessage(lastMsg.content);
         }
     } else {
         // 新しいアシスタントメッセージを作成 → 全体を再描画して新しいバブルを生成
@@ -294,30 +294,76 @@ function renderMessages() {
 function formatMessage(text) {
     if (!text) return '';
 
-    // HTMLエスケープ
-    let html = text
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
+    // markedのオプション設定 (初回のみでも良いですが念のため)
+    if (typeof marked !== 'undefined') {
+        marked.setOptions({
+            breaks: true, // 改行を<br>に変換
+            gfm: true
+        });
+    }
 
-    // コードブロック ```
-    html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
-        return `<pre><code>${code.trim()}</code></pre>`;
+    let processedText = text;
+    let isThinking = false;
+
+    // <think>が含まれていて</think>がない場合はストリーミング中と判定
+    const thinkStartCount = (processedText.match(/<think>/g) || []).length;
+    const thinkEndCount = (processedText.match(/<\/think>/g) || []).length;
+    if (thinkStartCount > thinkEndCount) {
+        processedText += '</think>';
+        isThinking = true;
+    }
+
+    // <think>タグの中身を取り出して個別にパースするためにプレースホルダーに置換
+    const thinkBlocks = [];
+    processedText = processedText.replace(/<think>([\s\S]*?)<\/think>/g, (match, content) => {
+        const placeholder = `THINKBLOCKPLACEHOLDER${thinkBlocks.length}END`;
+        thinkBlocks.push(content);
+        return placeholder;
     });
 
-    // インラインコード `
-    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+    let html = '';
+    // markedが読み込まれていればパース、なければ簡易エスケープ
+    if (typeof marked !== 'undefined') {
+        html = marked.parse(processedText);
+    } else {
+        html = escapeHtml(processedText).replace(/\n/g, '<br>');
+    }
 
-    // 太字 **text**
-    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    // DOMPurifyでサニタイズ
+    if (typeof DOMPurify !== 'undefined') {
+        html = DOMPurify.sanitize(html, {
+            ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p', 'br', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'code', 'pre', 'blockquote', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'hr', 'span', 'details', 'summary', 'div'],
+            ALLOWED_ATTR: ['href', 'target', 'class', 'open']
+        });
+    }
 
-    // 斜体 *text*
-    html = html.replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '<em>$1</em>');
+    // プレースホルダーを<details>に展開
+    thinkBlocks.forEach((content, index) => {
+        const placeholder = `THINKBLOCKPLACEHOLDER${index}END`;
+        let contentHtml = typeof marked !== 'undefined' ? marked.parse(content.trim()) : escapeHtml(content.trim()).replace(/\n/g, '<br>');
 
-    // 改行
-    html = html.replace(/\n/g, '<br>');
+        if (typeof DOMPurify !== 'undefined') {
+            contentHtml = DOMPurify.sanitize(contentHtml, {
+                ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p', 'br', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'code', 'pre', 'blockquote', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'hr', 'span', 'details', 'summary', 'div'],
+                ALLOWED_ATTR: ['href', 'target', 'class', 'open']
+            });
+        }
 
-    return html;
+        const isLastAndThinking = isThinking && index === thinkBlocks.length - 1;
+        let detailsHtml = '';
+
+        if (isLastAndThinking) {
+            detailsHtml = `<details class="think-block thinking" open><summary class="think-summary"><span class="think-icon">💭</span> 思考中...</summary><div class="think-content markdown-body">${contentHtml}</div></details>`;
+        } else {
+            detailsHtml = `<details class="think-block"><summary class="think-summary"><span class="think-icon">💭</span> 推論過程を表示</summary><div class="think-content markdown-body">${contentHtml}</div></details>`;
+        }
+
+        // markedが<p>で囲んだプレースホルダーなどを置換
+        const regex = new RegExp(`<p>${placeholder}</p>|${placeholder}`, 'g');
+        html = html.replace(regex, detailsHtml);
+    });
+
+    return `<div class="markdown-body">${html}</div>`;
 }
 
 // --- タイピングインジケーター ---

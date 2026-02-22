@@ -67,7 +67,6 @@
             </div>
         </div>
 
-        <!-- 入力エリア -->
         <div class="input-area">
             <div class="input-wrapper">
                 <textarea id="messageInput" placeholder="メッセージを入力..." rows="1"></textarea>
@@ -85,6 +84,9 @@
         </div>
     </div>
 
+    <!-- Markdown Parser & Sanitizer -->
+    <script src="../node_modules/marked/lib/marked.umd.js"></script>
+    <script src="../node_modules/dompurify/dist/purify.min.js"></script>
     <script src="llm-chat.js"></script>
 </body>
 
